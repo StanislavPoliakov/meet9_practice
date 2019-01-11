@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Блокнот (meet9)</string>
+    <string name="action_settings">Настройки</string>
+    <string name="intro_exist">У Вас есть следующие сохраненные заметки:</string>
+    <string name="intro_notExist">У Вас нет сохраненных заметок!</string>
+    <string name="manual">
+
+       \t\t\t<i>Нажмите знак <b>\"Плюс\"</b> в нижней правой части экрана для добавления новой записи \n\n
+
+        \t\t\tИпользуйте меню <b>\"Настройки\"</b> для изменения стиля текста записи</i>
+
+    </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="home.stanislavpoliakov.meet9_practice.MainActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_notification_clear_all"
+        android:iconTint="@color/colorAccent"
+        android:iconTintMode="add"
+        android:orderInCategory="100"
+        android:title="@string/action_settings" />
+</menu>
