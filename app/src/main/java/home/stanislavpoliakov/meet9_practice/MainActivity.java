@@ -1,5 +1,7 @@
 package home.stanislavpoliakov.meet9_practice;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,24 +26,44 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        /*Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        /*fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });*/
+
+        initViewItems();
         initFragments();
+    }
+
+    private void initViewItems() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(CreateEntry.newIntent(MainActivity.this));
+            }
+        });
     }
 
     private void initFragments(){
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //TODO Сделать логику отображения фрагментов в зависимости от наличия записей
+
         fragmentManager.beginTransaction()
-                .add(R.id.mainFrame, NoEntries.newInstance(), "No Entries")
+         //       .add(R.id.mainFrame, NoEntries.newInstance(), "No Entries")
+                .add(R.id.mainFrame, EntriesFragment.newInstance(), "EntriesFragment")
                 .commitNow();
     }
 
@@ -69,13 +91,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private CharSequence menuItemWithIconAndText(int resourceId, String title) {
-
-        Drawable icon = getResources().getDrawable(resourceId);
-        icon.setBounds(0,0, 80, 100);
-        SpannableString sString = new SpannableString("  " + title);
-        ImageSpan imageSpan = new ImageSpan(icon, ImageSpan.ALIGN_BOTTOM);
-        sString.setSpan(imageSpan,0,1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return sString;
+    public static Intent newIntent(Context context) {
+        return new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 }
