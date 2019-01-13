@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#d81b60</color>
     <color name="violet">#7112bf</color>
+    <color name="unfocusedColor">#aaaaaa</color>
+    <color name="focusedColor">#000000</color>
 </resources>

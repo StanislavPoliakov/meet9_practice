@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     tools:context=".CreateEntry">
+
 
     <EditText
         android:id="@+id/editTitle"
@@ -12,8 +14,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:gravity="center"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        android:text="@string/create_entry_label"
+        android:text="@string/def_title"
+        android:textColor="@android:color/darker_gray"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/createEntryLabel" />
@@ -24,8 +29,10 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:gravity="center"
         android:inputType="textMultiLine"
-        android:text="Содержимое записи"
+        android:text="@string/def_text"
+        android:textColor="@color/unfocusedColor"
         app:layout_constraintBottom_toTopOf="@+id/createButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

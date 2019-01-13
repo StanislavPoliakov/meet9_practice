@@ -14,4 +14,6 @@
     <string name="entry_text">Текст записи</string>
     <string name="timestamp">Дата публикации</string>
     <string name="create_entry_label">Создание новой записи</string>
+    <string name="def_title">Введите наименование новой записи</string>
+    <string name="def_text">Содержимое записи</string>
 </resources>
