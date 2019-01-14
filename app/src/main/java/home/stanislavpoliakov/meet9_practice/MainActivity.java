@@ -7,8 +7,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
@@ -21,8 +25,22 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "meet9_logs";
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private Messenger fragmentMessenger;
+    private Messenger activityMessenger = new Messenger(new IncomingHandler());
+
+    private class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFragments(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
 
         //TODO Сделать логику отображения фрагментов в зависимости от наличия записей
 
@@ -88,10 +105,25 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            DBManager dbManager = new DBManager(this);
+            /*Entry entry1 = new Entry("Хуяйтл", "Хуекст");
+            dbManager.putEntry(entry1);
+            dbManager.putEntry(new Entry("123", "asdas"));*/
+            List<Entry> entryList = dbManager.getEntries();
+            for (Entry entry : entryList) {
+                //Log.d(TAG, "TIMESTAMP = " + entry.getTimeStamp());
+                Log.d(TAG, "TITLE = " + entry.getTitle());
+                Log.d(TAG, "TEXT = " + entry.getText());
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateFragment(List<Entry> data) {
+        /*Fragment fragment = fragmentManager.findFragmentByTag("EntriesFragment");
+        fragment.set*/
     }
 
     public static Intent newIntent(Context context) {
