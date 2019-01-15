@@ -22,13 +22,13 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EntriesFragment extends Fragment {
+public class EntriesFragment extends Fragment implements DataSetChangeListener{
     private static final String TAG = "meet9_logs";
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter<MyAdapter.MyViewHolder> mAdapter;
+    private MyAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private List<Entry> entries = new ArrayList<>();
-    public static final int MSG_FRAGMENT_CREATED = 0;
+    private List<Entry> entries;
+    //public static final int MSG_CREATE = 0;
 
     public static EntriesFragment newInstance() {
         return new EntriesFragment();
@@ -37,6 +37,7 @@ public class EntriesFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        //initRecyclerView();
     }
 
     @Override
@@ -74,6 +75,7 @@ public class EntriesFragment extends Fragment {
     }
 
     private void initList() {
+       /* entries.add(new Entry("First Title", ""));
         entries.add(new Entry("First Title", ""));
         entries.add(new Entry("First Title", ""));
         entries.add(new Entry("First Title", ""));
@@ -84,7 +86,14 @@ public class EntriesFragment extends Fragment {
         entries.add(new Entry("First Title", ""));
         entries.add(new Entry("First Title", ""));
         entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
+        entries.add(new Entry("First Title", ""));*/
+    }
+
+    @Override
+    public void updateDataSet(List<Entry> entries) {
+        this.entries = entries;
+        Log.d(TAG, "updateDataSet: " + entries.size());
+        if (mAdapter != null) mAdapter.setData(entries);
+
     }
 }

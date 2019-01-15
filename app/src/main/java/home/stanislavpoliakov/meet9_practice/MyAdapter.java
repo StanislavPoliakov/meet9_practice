@@ -61,6 +61,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return entries.size();
     }
 
+    public void setData(List<Entry> entries) {
+        this.entries = entries;
+        notifyDataSetChanged();
+        //notifyItemInserted(entries.size());
+    }
+
     private View previousView;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

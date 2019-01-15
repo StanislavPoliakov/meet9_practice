@@ -27,9 +27,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="#7112bf"
-        app:fabSize="normal"
+        android:layout_margin="16dp"
+        app:backgroundTint="@android:color/background_light"
+        app:fabSize="mini"
         app:rippleColor="@android:color/black"
         app:srcCompat="@drawable/add_icon" />
 

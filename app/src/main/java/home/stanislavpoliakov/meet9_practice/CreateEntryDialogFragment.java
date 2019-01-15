@@ -1,55 +1,73 @@
 package home.stanislavpoliakov.meet9_practice;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.app.DialogFragment.STYLE_NO_FRAME;
-
-public class CreateEntry extends AppCompatActivity {
+public class CreateEntryDialogFragment extends DialogFragment {
     private EditText editTitle, editText;
     private Button createButton;
     private Entry entry;
     private static final String TAG = "meet9_logs";
     String defaultTitle;
     String defaultText;
+    private CRUDOperationsListener mActivity;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-     //   Log.d(TAG, "onCreate: ");
-        setContentView(R.layout.activity_create_entry);
-
-
-        initItems();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mActivity = (CRUDOperationsListener) context;
+        } catch (ClassCastException ex) {
+            Log.d(TAG, "Main Activity must implement CRUDOperationsListener");
+        }
     }
 
-    private void initItems() {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_create_entry, container, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setLayout(width, height);
+        }
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initItems(view);
+    }
+
+    private void initItems(View view) {
         defaultTitle = getResources().getString(R.string.def_title);
         defaultText = getResources().getString(R.string.def_text);
 
-        editTitle = findViewById(R.id.editTitle);
-        editText = findViewById(R.id.editText);
+        editTitle = view.findViewById(R.id.editTitle);
+        editText = view.findViewById(R.id.editText);
 
         editTitle.setOnFocusChangeListener(mFocusChangeListener);
         editText.setOnFocusChangeListener(mFocusChangeListener);
 
-        createButton = findViewById(R.id.createButton);
+        createButton = view.findViewById(R.id.createButton);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,9 +76,11 @@ public class CreateEntry extends AppCompatActivity {
 
                 entry = new Entry(title, text);
 
+                mActivity.putEntry(entry);
+                dismiss();
                 //Log.d(TAG, "onClick: " + editText.getText().toString());
 
-                startActivity(MainActivity.newIntent(CreateEntry.this));
+                //startActivity(MainActivity.newIntent(CreateEntry.this));
             }
         });
 
@@ -72,8 +92,8 @@ public class CreateEntry extends AppCompatActivity {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
 
-            final int NO_FOCUS_COLOR = getResources().getColor(R.color.unfocusedColor, getTheme());
-            final int ON_FOCUS_COLOR = getResources().getColor(R.color.focusedColor, getTheme());
+            final int NO_FOCUS_COLOR = getResources().getColor(R.color.unfocusedColor, getContext().getTheme());
+            final int ON_FOCUS_COLOR = getResources().getColor(R.color.focusedColor, getContext().getTheme());
 
             if (v != null) {
                 EditText editView = (EditText) v;
@@ -92,23 +112,4 @@ public class CreateEntry extends AppCompatActivity {
             }
         }
     };
-
-  /*  private View.OnHoverListener hoverListener = new View.OnHoverListener() {
-        @Override
-        public boolean onHover(View v, MotionEvent event) {
-            String currentTitle = editTitle.getText().toString();
-            String currentText = editText.getText().toString();
-
-            if (defaultTitle.equals(currentTitle) || defaultText.equals(currentText)
-                || currentText.isEmpty() || currentTitle.isEmpty()) v.setEnabled(false);
-            else v.setEnabled(true);
-
-            return v.isHovered();
-        }
-    };*/
-
-    public static Intent newIntent(Context context) {
-        //Log.d(TAG, "newIntent: ");
-        return new Intent(context, CreateEntry.class);
-    }
 }
