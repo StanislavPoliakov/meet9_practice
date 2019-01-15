@@ -2,6 +2,7 @@ package home.stanislavpoliakov.meet9_practice;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -67,11 +68,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         //notifyItemInserted(entries.size());
     }
 
+    public void onNewData(List<Entry> oldData, List<Entry> newData) {
+        Log.d(TAG, "onNewData: ");
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffCall(oldData, newData));
+        result.dispatchUpdatesTo(this);
+        Log.d(TAG, "onNewData: ");
+        entries.clear();
+        entries.addAll(newData);
+    }
+
     private View previousView;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView titleView, textView, timeStampLabel;
         private LinearLayout linearLayout;
+        private boolean isSingleLine = true;
 
         private View.OnClickListener mOnClickListener = new View.OnClickListener() {
             //private final int DEFAULT_COLOR =
@@ -95,7 +106,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             titleView = itemView.findViewById(R.id.titleTextView);
             textView = itemView.findViewById(R.id.entryTextView);
             timeStampLabel = itemView.findViewById(R.id.timeStampLabel);
-            linearLayout = itemView.findViewById(R.id.LinearLayout);
+            //linearLayout = itemView.findViewById(R.id.LinearLayout);
             //final boolean isGone = true;
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -111,15 +122,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     previousView = v;*/
 
                     //Log.d(TAG, "onClick: X / Y = " + v.getX() + " / " + v.getY());
-                    linearLayout.setVisibility(
-                            (linearLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
+                    //linearLayout.setVisibility(
+                          //  (linearLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
 
-                    ViewGroup.LayoutParams layoutParams = textView.getLayoutParams();
+                    /*ViewGroup.LayoutParams layoutParams = textView.getLayoutParams();
                     layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    textView.setLayoutParams(layoutParams);
+                    textView.setLayoutParams(layoutParams);*/
 
-                    Animation slideDown = AnimationUtils.loadAnimation(context, R.anim.slidedown);
-                    linearLayout.startAnimation(slideDown);
+                    isSingleLine = !isSingleLine;
+                    textView.setSingleLine(isSingleLine);
+
+                    /*Animation slideDown = AnimationUtils.loadAnimation(context, R.anim.slidedown);
+                    textView.startAnimation(slideDown);*/
+                    //linearLayout.startAnimation(slideDown);
                 }
 
             });

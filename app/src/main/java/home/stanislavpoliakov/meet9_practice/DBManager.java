@@ -19,13 +19,13 @@ public class DBManager {
     }
 
     public void test() {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        //Log.d(TAG, "test: db = " + database.getPath());
-        database.close();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        dbHelper.deleteTable(db);
+        db.close();
     }
 
     public List<Entry> getEntries() {
-        List<Entry> entries = new ArrayList<>();
+        List<Entry> entryList;
 
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         try {
@@ -33,11 +33,12 @@ public class DBManager {
             Cursor cursor = database.query("entries", null, null, null,
                     null, null, null);
             //getEntryByCursor(cursor);
-            entries = getEntryList(cursor);
+            entryList = getEntryList(cursor);
             cursor.close();
             //Log.d(TAG, "getEntries: db.size = " + database.);
             database.setTransactionSuccessful();
             database.endTransaction();
+            return entryList;
         } catch (SQLException ex) {
             //Log.d(TAG, "getEntries: SQL Exception = " + ex.getMessage());
             Log.w(TAG, "getEntries: ", ex);
@@ -46,9 +47,9 @@ public class DBManager {
             database.close();
         }
 
-        Log.d(TAG, "getEntries: entries.size = " + entries.size());
+        //Log.d(TAG, "getEntries: entries.size = " + entries.size());
 
-        return entries;
+        return null;
     }
 
     private List<Entry> getEntryList(Cursor cursor) {
@@ -57,9 +58,13 @@ public class DBManager {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
            // Log.d(TAG, "entry title = " + cursor.getString(cursor.getColumnIndex("name")));
-            String title = cursor.getString(cursor.getColumnIndex("name"));
+            String timeStamp = cursor.getString(cursor.getColumnIndex("timestamp"));
+            String title = cursor.getString(cursor.getColumnIndex("title"));
             String text = cursor.getString(cursor.getColumnIndex("entry_text"));
-            entryList.add(new Entry(title, text));
+
+            Entry entry = new Entry(title, text);
+            entry.setTimeStamp(timeStamp);
+            entryList.add(entry);
 
             cursor.moveToNext();
         }

@@ -91,9 +91,10 @@ public class EntriesFragment extends Fragment implements DataSetChangeListener{
 
     @Override
     public void updateDataSet(List<Entry> entries) {
-        this.entries = entries;
+        if (mAdapter != null) mAdapter.onNewData(this.entries, entries);
+        else this.entries = entries;
         Log.d(TAG, "updateDataSet: " + entries.size());
-        if (mAdapter != null) mAdapter.setData(entries);
+        //if (mAdapter != null) mAdapter.setData(entries);
 
     }
 }

@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
     public void putEntry(Entry entry) {
         Log.d(TAG, "putEntry: ");
         dbManager.putEntry(entry);
+        mFragment.updateDataSet(dbManager.getEntries());
     }
 
     private void fillRecycler() {

@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(" +
                 "entry_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-                "name TEXT NOT NULL," +
+                "title TEXT NOT NULL," +
                 "entry_text TEXT)");
     }
 
@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    private void deleteTable(SQLiteDatabase db) {
+    public void deleteTable(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS entries");
     }
 }

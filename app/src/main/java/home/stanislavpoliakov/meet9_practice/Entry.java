@@ -11,7 +11,7 @@ public class Entry {
     private static final String TAG = "meet9_logs";
 
     public Entry(String title, String text) {
-        setTimeStamp();
+        //setTimeStamp();
         this.title = title;
         this.text = text;
 
@@ -19,21 +19,22 @@ public class Entry {
     }
 
     public void update(String title) {
-        setTimeStamp();
+        //setTimeStamp();
         this.title = title;
     }
 
     public void update(String title, String text) {
-        setTimeStamp();
+        //setTimeStamp();
         this.title = title;
         this.text = text;
     }
 
-    private void setTimeStamp() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm / dd.MM");
+    public void setTimeStamp(String timeStamp) {
+        /*SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm / dd.MM");
         //Log.d(TAG, "setTimeStamp: " + dateFormat.format(Calendar.getInstance().getTime()));
         Calendar calendar = Calendar.getInstance();
-        timeStamp = dateFormat.format(calendar.getTime());
+        timeStamp = dateFormat.format(calendar.getTime());*/
+        this.timeStamp = timeStamp;
     }
 
     public String getTimeStamp() {
