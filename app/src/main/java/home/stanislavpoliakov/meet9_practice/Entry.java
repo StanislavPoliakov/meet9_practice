@@ -1,40 +1,37 @@
 package home.stanislavpoliakov.meet9_practice;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
+/**
+ * Класс записи, в котором:
+ * timeStamp - дата и вермя создания записи
+ * title - название записи
+ * text - текст записи
+ */
 public class Entry {
     private String timeStamp, title, text;
     private boolean isLarge;
     private static final String TAG = "meet9_logs";
 
     public Entry(String title, String text) {
-        //setTimeStamp();
         this.title = title;
         this.text = text;
 
+        //TODO Релизовать сохранение записи в отдельный файл, если запись слишком большая
+        //TODO Очевидно, что в база должна хранить ссылку на файл или NULL, если запись сохранена в базе
         isLarge = false;
     }
 
     public void update(String title) {
-        //setTimeStamp();
         this.title = title;
     }
 
     public void update(String title, String text) {
-        //setTimeStamp();
         this.title = title;
         this.text = text;
     }
 
     public void setTimeStamp(String timeStamp) {
-        /*SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm / dd.MM");
-        //Log.d(TAG, "setTimeStamp: " + dateFormat.format(Calendar.getInstance().getTime()));
-        Calendar calendar = Calendar.getInstance();
-        timeStamp = dateFormat.format(calendar.getTime());*/
         this.timeStamp = timeStamp;
+
     }
 
     public String getTimeStamp() {

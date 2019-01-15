@@ -7,25 +7,20 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private static final String TAG = "meet9_logs";
     private List<Entry> entries;
-    private Context context;
+   // private Context context; //Контекст был введен для теста анимации
 
     public MyAdapter(Context context, List<Entry> entries){
         this.entries = entries;
-        this.context = context;
+        //this.context = context;
     }
 
     @NonNull
@@ -35,6 +30,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return new MyViewHolder(view);
     }
 
+    /**
+     * Заполняем поля данными
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Entry entry = entries.get(position);
@@ -43,18 +43,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.titleView.setText(title);
 
         String text = entry.getText();
-        //holder.textView.setText("");
         holder.textView.setText(text);
-        /*//StringBuilder stringBuilder = new StringBuilder();
-        for (String line : textLines) {
-            //stringBuilder.append(line + "\n");
-            holder.textView.append(line);
-        }*/
 
         holder.timeStampLabel.setText(entry.getTimeStamp());
-
-
-
     }
 
     @Override
@@ -62,12 +53,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return entries.size();
     }
 
-    public void setData(List<Entry> entries) {
-        this.entries = entries;
-        notifyDataSetChanged();
-        //notifyItemInserted(entries.size());
-    }
-
+    /**
+     * Метод для сравнения данных в DiffUtils
+     * @param oldData старые данные
+     * @param newData новые данные
+     */
     public void onNewData(List<Entry> oldData, List<Entry> newData) {
         Log.d(TAG, "onNewData: ");
         DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffCall(oldData, newData));
@@ -77,25 +67,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         entries.addAll(newData);
     }
 
-    private View previousView;
-
+    /**
+     * Класс для ViewHolder
+     */
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView titleView, textView, timeStampLabel;
-        private LinearLayout linearLayout;
-        private boolean isSingleLine = true;
-
-        private View.OnClickListener mOnClickListener = new View.OnClickListener() {
-            //private final int DEFAULT_COLOR =
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        };
+        private boolean isSingleLine = true; // для эффекта разворачивающегося списка
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
+            /**
+             * Добавляем контекстное меню для удаления элемента. Реализации пока нет
+             */
             itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
                 public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -106,42 +90,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             titleView = itemView.findViewById(R.id.titleTextView);
             textView = itemView.findViewById(R.id.entryTextView);
             timeStampLabel = itemView.findViewById(R.id.timeStampLabel);
-            //linearLayout = itemView.findViewById(R.id.LinearLayout);
-            //final boolean isGone = true;
 
             itemView.setOnClickListener(new View.OnClickListener() {
 
+                /**
+                 * По нажатию на элемент списка разворачиваем текст записи
+                 * @param v
+                 */
                 @Override
                 public void onClick(View v) {
-                    /*if (previousView != null) {
-                        previousView.setBackgroundColor(0xFFFFFFFF);
-                    }
-                    //Toast.makeText(this, "Click", Toast.LENGTH_SHORT);
-                    Log.d(TAG, "Click");
-                    v.setBackgroundColor(0xFF888888);
-                    previousView = v;*/
-
-                    //Log.d(TAG, "onClick: X / Y = " + v.getX() + " / " + v.getY());
-                    //linearLayout.setVisibility(
-                          //  (linearLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
-
-                    /*ViewGroup.LayoutParams layoutParams = textView.getLayoutParams();
-                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    textView.setLayoutParams(layoutParams);*/
-
                     isSingleLine = !isSingleLine;
                     textView.setSingleLine(isSingleLine);
-
-                    /*Animation slideDown = AnimationUtils.loadAnimation(context, R.anim.slidedown);
-                    textView.startAnimation(slideDown);*/
-                    //linearLayout.startAnimation(slideDown);
                 }
-
             });
-
-
         }
-
-
     }
 }

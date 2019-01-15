@@ -21,120 +21,83 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements CRUDOperationsListener {
     private static final String TAG = "meet9_logs";
     private FragmentManager fragmentManager = getSupportFragmentManager();
-    private Messenger fragmentMessenger;
-    //private Messenger activityMessenger = new Messenger(new IncomingHandler());
     private DBManager dbManager;
     private DataSetChangeListener mFragment;
-
-    private class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-
-            }
-        }
-    }
+    private boolean isEmptyState;
+    //private boolean isFirstStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         initViewItems();
         initFragments();
     }
 
+    /**
+     * Инициализируем элементы Activity
+     */
     private void initViewItems() {
+        // Верхняя панель с меню настроек TODO реализовать изменения SharedPreferences
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        dbManager = new DBManager(this);
 
+        dbManager = new DBManager(this);
+        isEmptyState = dbManager.getEntries().size() == 0;
+
+        // Кнопка добавления новой записи
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+
+            /**
+             * По нажатию кнопки открываем dialog-фрагмент
+             * @param v
+             */
             @Override
             public void onClick(View v) {
-                //startActivity(CreateEntry.newIntent(MainActivity.this));
-                //Log.d(TAG, "onClick: ");
 
                 CreateEntryDialogFragment dialogFragment = new CreateEntryDialogFragment();
-                //dialogFragment.show(fragmentManager, "create dialog");
 
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.add(dialogFragment, "dialog")
+                //TRANSITION_FRAGMENT_CLOSE - удаляет фрагмент из стека. Не релизовывал
+
+                fragmentManager.beginTransaction()
+                        .add(dialogFragment, "dialog")
                         .commit();
             }
         });
     }
 
+    /**
+     * Метод инициализации фрагментов. Если записей в базе нет - один фрагмент, если есть - другой
+     */
     private void initFragments(){
-
-        //TODO Сделать логику отображения фрагментов в зависимости от наличия записей
-
-        //EntriesFragment fragment = (EntriesFragment) fragmentManager.findFragmentById(R.id.entriesFragment);
-
-
-        //fragment = (fragment == null) ? new EntriesFragment() : fragment;
-        //mFragment = (DataSetChangeListener) fragment;
-
-        Bundle bundle = new Bundle();
-
-
-
-        fragmentManager.beginTransaction()
-         //       .add(R.id.mainFrame, NoEntries.newInstance(), "No Entries")
-                .add(R.id.mainFrame, EntriesFragment.newInstance(), "EntriesFragment")
-                .commitNow();
-
-        mFragment = (DataSetChangeListener) fragmentManager.findFragmentByTag("EntriesFragment");
-
-
-        fillRecycler();
+        if (isEmptyState) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.mainFrame, NoEntries.newInstance(), "No Entries")
+                    .commitNow();
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.mainFrame, EntriesFragment.newInstance(), "EntriesFragment")
+                    .commitNow();
+            mFragment = (DataSetChangeListener) fragmentManager.findFragmentByTag("EntriesFragment");
+            fillRecycler();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        //((MenuBuilder) menu).setOptionalIconsVisible(true);
-        //menu.add(menuItemWithIconAndText(R.drawable.font_change, "new"));
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            DBManager dbManager = new DBManager(this);
-            /*Entry entry1 = new Entry("Хуяйтл", "Хуекст");
-            dbManager.putEntry(entry1);
-            dbManager.putEntry(new Entry("123", "asdas"));*/
-            List<Entry> entryList = dbManager.getEntries();
-            for (Entry entry : entryList) {
-                //Log.d(TAG, "TIMESTAMP = " + entry.getTimeStamp());
-                Log.d(TAG, "TITLE = " + entry.getTitle());
-                Log.d(TAG, "TEXT = " + entry.getText());
-            }
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -143,20 +106,25 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
         fragment.set*/
     }
 
+    /**
+     * Метод интерфейса взаимаодействия. Метод добавления новой записи в базу
+     * @param entry запись, которую необходимо добавить
+     */
     @Override
     public void putEntry(Entry entry) {
-        Log.d(TAG, "putEntry: ");
         dbManager.putEntry(entry);
-        mFragment.updateDataSet(dbManager.getEntries());
+
+        // Если в базе не было записей, то сначала инициализируем соответствующий фрагмент
+        if (isEmptyState) {
+            isEmptyState = false;
+            initFragments();
+        } else fillRecycler();
     }
 
+    /**
+     * Метод заполнения RecyclerView данными из базы
+     */
     private void fillRecycler() {
-        Log.d(TAG, "fillRecycler: ");
         mFragment.updateDataSet(dbManager.getEntries());
-        Log.d(TAG, "fillRecycler: ");
-    }
-
-    public static Intent newIntent(Context context) {
-        return new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 }

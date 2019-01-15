@@ -5,6 +5,9 @@ import android.util.Log;
 
 import java.util.List;
 
+/**
+ * Класс обработки различий DiffUtils
+ */
 public class DiffCall extends DiffUtil.Callback {
     private static final String TAG = "meet9_logs";
     private List<Entry> oldData, newData;
@@ -26,6 +29,8 @@ public class DiffCall extends DiffUtil.Callback {
     public int getNewListSize() {
         return newData.size();
     }
+
+    //TODO Обработать различия в содержимом
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {

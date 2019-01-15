@@ -1,7 +1,5 @@
 package home.stanislavpoliakov.meet9_practice;
 
-
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,37 +11,25 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class EntriesFragment extends Fragment implements DataSetChangeListener{
     private static final String TAG = "meet9_logs";
-    private RecyclerView recyclerView;
     private MyAdapter mAdapter;
-    private LinearLayoutManager mLayoutManager;
-    private List<Entry> entries;
-    //public static final int MSG_CREATE = 0;
+    private List<Entry> entries = new ArrayList<>();
 
     public static EntriesFragment newInstance() {
         return new EntriesFragment();
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        //initRecyclerView();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_entries, container, false);
     }
 
@@ -53,48 +39,43 @@ public class EntriesFragment extends Fragment implements DataSetChangeListener{
         initRecyclerView(view);
     }
 
+    /**
+     * Метод инициализации RecyclerView
+     * @param view созданное отображение фрагмента
+     */
     private void initRecyclerView(@NonNull View view) {
-        initList();
-
-        recyclerView = view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
 
         mAdapter = new MyAdapter(getContext(), entries);
         recyclerView.setAdapter(mAdapter);
 
-        mLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext(),
+                LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
-
-        recyclerView.setSelected(true);
-        //recyclerView.setScroll
     }
 
+    /**
+     * Метод для обработки пунтктов контекстного меню, созданного для конкретного ViewHolder'-а
+     * @param item выбранный пункт
+     * @return TODO пока не реализовано
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         Log.d(TAG, "onContextItemSelected: ");
         return super.onContextItemSelected(item);
     }
 
-    private void initList() {
-       /* entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));
-        entries.add(new Entry("First Title", ""));*/
-    }
-
+    /**
+     * Метод обновления данных. При начальной инициализации фрагмента mAdapter = null,
+     * поэтому устанавливаем элементы в глобальной перменной, а Адаптер будет инициализирован через
+     * свой метод (initRecyclerView). Впоследствии, при CRUD-операциях Адаптер уже будет
+     * инициализирован, поэтому мы передаем управление обновлением ему.
+     * @param entries
+     */
     @Override
     public void updateDataSet(List<Entry> entries) {
-        if (mAdapter != null) mAdapter.onNewData(this.entries, entries);
-        else this.entries = entries;
-        Log.d(TAG, "updateDataSet: " + entries.size());
-        //if (mAdapter != null) mAdapter.setData(entries);
+        if (mAdapter == null) this.entries = entries;
+        else mAdapter.onNewData(this.entries, entries);
 
     }
 }
