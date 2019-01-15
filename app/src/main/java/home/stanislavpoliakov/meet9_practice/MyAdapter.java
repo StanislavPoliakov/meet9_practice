@@ -59,12 +59,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
      * @param newData новые данные
      */
     public void onNewData(List<Entry> oldData, List<Entry> newData) {
-        Log.d(TAG, "onNewData: ");
         DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffCall(oldData, newData));
         result.dispatchUpdatesTo(this);
-        Log.d(TAG, "onNewData: ");
         entries.clear();
         entries.addAll(newData);
+
+        notifyDataSetChanged(); // Чтобы RecyclerView не мигал :) "Чтобы цепь не слетала" (с)
     }
 
     /**
@@ -83,7 +83,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
                 public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                    menu.add(0,0,0,"DELETE");
+                    //Log.d(TAG, "onCreateContextMenu: " + getAdapterPosition());
+                    menu.add(0, getAdapterPosition(),0,"DELETE");
+                   // Log.d(TAG, "onCreateContextMenu: " + );
                 }
             });
 

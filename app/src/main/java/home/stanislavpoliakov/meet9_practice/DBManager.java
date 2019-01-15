@@ -123,4 +123,25 @@ public class DBManager {
 
         return contentValues;
     }
+
+    public void deleteEntry(int entryPosition) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        try {
+            //database.beginTransaction();
+            Cursor cursor = database.query("entries", null, null, null,
+                    null, null, null);
+            cursor.moveToPosition(entryPosition);
+            int entryID = cursor.getInt(cursor.getColumnIndex("entry_id"));
+            cursor.close();
+            Log.d(TAG, "deleteEntry: " + entryID);
+            database.delete("entries", "entry_id = " + entryID, null);
+            //database.setTransactionSuccessful();
+            //database.endTransaction();
+
+        } catch (SQLException ex) {
+            Log.w(TAG, "deleteEntry: ", ex);
+        } finally {
+            database.close();
+        }
+    }
 }

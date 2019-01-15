@@ -1,5 +1,6 @@
 package home.stanislavpoliakov.meet9_practice;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,9 +23,20 @@ public class EntriesFragment extends Fragment implements DataSetChangeListener{
     private static final String TAG = "meet9_logs";
     private MyAdapter mAdapter;
     private List<Entry> entries = new ArrayList<>();
+    private CRUDOperationsListener mActivity;
 
     public static EntriesFragment newInstance() {
         return new EntriesFragment();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mActivity = (CRUDOperationsListener) context;
+        } catch (ClassCastException ex) {
+            Log.w(TAG, "onAttach: Activity must implement CRUDOperationsListener", ex);
+        }
     }
 
     @Override
@@ -61,7 +73,8 @@ public class EntriesFragment extends Fragment implements DataSetChangeListener{
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Log.d(TAG, "onContextItemSelected: ");
+        //Log.d(TAG, "onContextItemSelected: " + item.getItemId());
+        mActivity.deleteEntry(item.getItemId());
         return super.onContextItemSelected(item);
     }
 
@@ -76,6 +89,5 @@ public class EntriesFragment extends Fragment implements DataSetChangeListener{
     public void updateDataSet(List<Entry> entries) {
         if (mAdapter == null) this.entries = entries;
         else mAdapter.onNewData(this.entries, entries);
-
     }
 }

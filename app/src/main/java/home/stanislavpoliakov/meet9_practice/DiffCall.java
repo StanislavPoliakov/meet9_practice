@@ -15,9 +15,6 @@ public class DiffCall extends DiffUtil.Callback {
     public DiffCall(List<Entry> oldData, List<Entry> newData) {
         this.oldData = oldData;
         this.newData = newData;
-
-        Log.d(TAG, "oldData = " + oldData.toString());
-        Log.d(TAG, "newData = " + newData.toString());
     }
 
     @Override

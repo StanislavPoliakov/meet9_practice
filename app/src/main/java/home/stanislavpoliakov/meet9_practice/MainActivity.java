@@ -122,6 +122,17 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
     }
 
     /**
+     * Метод удаления выбранной записи.
+     * @param entryPosition позиция элемента, на котором было вызвано контекстное меню и нажата кнопка
+     *                      DELETE
+     */
+    @Override
+    public void deleteEntry(int entryPosition) {
+        dbManager.deleteEntry(entryPosition);
+        fillRecycler();
+    }
+
+    /**
      * Метод заполнения RecyclerView данными из базы
      */
     private void fillRecycler() {
