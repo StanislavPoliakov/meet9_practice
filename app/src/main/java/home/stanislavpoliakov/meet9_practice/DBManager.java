@@ -81,6 +81,30 @@ public class DBManager {
         return entryList;
     }
 
+    public Entry getEntry(int entryPosition) {
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        //String title = "";
+       // String text = "";
+
+        try {
+            Cursor cursor = database.query("entries", null, null, null,
+                    null, null, null);
+            cursor.moveToPosition(entryPosition);
+
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            String text = cursor.getString(cursor.getColumnIndex("entry_text"));
+
+            cursor.close();
+            return new Entry(title, text);
+        } catch (SQLException ex) {
+            Log.w(TAG, "getEntry: ",ex);
+        } finally {
+            database.close();
+        }
+        //return new Entry(title, text);
+        return null;
+    }
+
     /**
      * Метод для записи объекта данных в базу, открытую для записи
      * @param entry объект данных, который необходимо сохранить в базе
@@ -124,6 +148,29 @@ public class DBManager {
         return contentValues;
     }
 
+    public void putEntryIntoPosition(Entry entry, int entryPosition) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("title", entry.getTitle());
+        contentValues.put("entry_text", entry.getText());
+        try {
+            Cursor cursor = database.query("entries", null, null, null,
+                    null, null, null);
+            cursor.moveToPosition(entryPosition);
+            int entryID = cursor.getInt(cursor.getColumnIndex("entry_id"));
+            cursor.close();
+            contentValues.put("entry_id", entryID);
+
+            database.replace("entries", null, contentValues);
+        } catch (SQLException ex) {
+            Log.w(TAG, "putEntryIntoPosition: ",ex);
+        } finally {
+            database.close();
+        }
+    }
+
     public void deleteEntry(int entryPosition) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         try {
@@ -133,7 +180,7 @@ public class DBManager {
             cursor.moveToPosition(entryPosition);
             int entryID = cursor.getInt(cursor.getColumnIndex("entry_id"));
             cursor.close();
-            Log.d(TAG, "deleteEntry: " + entryID);
+            //Log.d(TAG, "deleteEntry: " + entryID);
             database.delete("entries", "entry_id = " + entryID, null);
             //database.setTransactionSuccessful();
             //database.endTransaction();

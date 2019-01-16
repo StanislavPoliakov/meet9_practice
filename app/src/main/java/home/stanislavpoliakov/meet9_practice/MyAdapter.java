@@ -1,7 +1,10 @@
 package home.stanislavpoliakov.meet9_practice;
 
+import android.app.FragmentManager;
 import android.content.Context;
+import android.opengl.Visibility;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,6 +12,10 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,11 +23,11 @@ import java.util.List;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private static final String TAG = "meet9_logs";
     private List<Entry> entries;
-   // private Context context; //Контекст был введен для теста анимации
+    private Context context; //Контекст был введен для теста анимации
 
     public MyAdapter(Context context, List<Entry> entries){
         this.entries = entries;
-        //this.context = context;
+        this.context = context;
     }
 
     @NonNull
@@ -67,12 +74,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         notifyDataSetChanged(); // Чтобы RecyclerView не мигал :) "Чтобы цепь не слетала" (с)
     }
 
+    private View previousView;
+    private boolean isPreviousViewCollapsed;
+
     /**
      * Класс для ViewHolder
      */
     public class MyViewHolder extends RecyclerView.ViewHolder {
+
         public TextView titleView, textView, timeStampLabel;
-        private boolean isSingleLine = true; // для эффекта разворачивающегося списка
+        public ImageButton editButton, deleteButton;
+        private ConstraintLayout constraintLayout;
+        //private boolean isSingleLine = true; // для эффекта разворачивающегося списка
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -89,11 +102,45 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 }
             });
 
+
+
+            constraintLayout = itemView.findViewById(R.id.entryLayout);
             titleView = itemView.findViewById(R.id.titleTextView);
             textView = itemView.findViewById(R.id.entryTextView);
             timeStampLabel = itemView.findViewById(R.id.timeStampLabel);
+            editButton = itemView.findViewById(R.id.editButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        CRUDOperationsListener mActivity = (CRUDOperationsListener) MyAdapter.this.context;
+                        mActivity.deleteEntry(getAdapterPosition());
+                    } catch (ClassCastException ex) {
+
+                    }
+                }
+            });
+
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        CRUDOperationsListener mActivity = (CRUDOperationsListener) MyAdapter.this.context;
+                        mActivity.editEntry(getAdapterPosition());
+                    } catch (ClassCastException ex) {
+
+                    }
+
+                }
+            });
+
+            //final Animation slideDown = AnimationUtils.loadAnimation(context, R.anim.slidedown);
+            //final Animation slideUp = AnimationUtils.loadAnimation(context, R.anim.slideup);
 
             itemView.setOnClickListener(new View.OnClickListener() {
+                private boolean isSingleLine = true; // для эффекта разворачивающегося списка
 
                 /**
                  * По нажатию на элемент списка разворачиваем текст записи
@@ -101,8 +148,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                  */
                 @Override
                 public void onClick(View v) {
-                    isSingleLine = !isSingleLine;
-                    textView.setSingleLine(isSingleLine);
+                    if (previousView != null && !previousView.equals(v)) {
+                        TextView pTextView = previousView.findViewById(R.id.entryTextView);
+                        ImageButton pEditButton = previousView.findViewById(R.id.editButton);
+                        ImageButton pDeleteButton = previousView.findViewById(R.id.deleteButton);
+
+                        boolean needToHide = (pEditButton.getVisibility() != View.GONE);
+                        if (needToHide) {
+                            pTextView.setSingleLine(true);
+                            pEditButton.setVisibility(View.GONE);
+                            pDeleteButton.setVisibility(View.GONE);
+                        }
+                    }
+                    boolean needToHide = (editButton.getVisibility() != View.GONE);
+                    textView.setSingleLine(needToHide);
+                    editButton.setVisibility((needToHide) ? View.GONE : View.VISIBLE);
+                    deleteButton.setVisibility((needToHide) ? View.GONE : View.VISIBLE);
+                    previousView = v;
                 }
             });
         }

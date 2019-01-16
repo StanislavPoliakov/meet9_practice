@@ -1,14 +1,8 @@
 package home.stanislavpoliakov.meet9_practice;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -129,6 +123,38 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
     @Override
     public void deleteEntry(int entryPosition) {
         dbManager.deleteEntry(entryPosition);
+        fillRecycler();
+        if (dbManager.getEntries().size() == 0) {
+            isEmptyState = true;
+            initFragments();
+        }
+    }
+
+    @Override
+    public void editEntry(int entryPosition) {
+        Bundle bundle = new Bundle();
+        Entry entry = dbManager.getEntry(entryPosition);
+        bundle.putString("title", entry.getTitle());
+        //Log.d(TAG, "editEntry: title = " + bundle.getString("title"));
+        bundle.putString("text", entry.getText());
+        //Log.d(TAG, "editEntry: text = " + bundle.getString("text"));
+        bundle.putInt("position", entryPosition);
+
+        //bundle.
+        startEditFragment(bundle);
+    }
+
+    private void startEditFragment(Bundle defaultFields) {
+        EditEntryDialogFragment dialogFragment = new EditEntryDialogFragment();
+        dialogFragment.setArguments(defaultFields);
+        fragmentManager.beginTransaction()
+                .add(dialogFragment, "edit")
+                .commitNow();
+    }
+
+    @Override
+    public void updateEntry(Entry entry, int entryPosition) {
+        dbManager.putEntryIntoPosition(entry, entryPosition);
         fillRecycler();
     }
 

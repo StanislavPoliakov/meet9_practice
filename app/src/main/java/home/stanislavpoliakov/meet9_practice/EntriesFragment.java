@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EntriesFragment extends Fragment implements DataSetChangeListener{
+public class EntriesFragment extends Fragment implements DataSetChangeListener {
     private static final String TAG = "meet9_logs";
     private MyAdapter mAdapter;
     private List<Entry> entries = new ArrayList<>();

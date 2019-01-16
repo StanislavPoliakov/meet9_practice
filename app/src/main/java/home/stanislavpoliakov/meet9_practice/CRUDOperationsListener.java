@@ -6,4 +6,6 @@ package home.stanislavpoliakov.meet9_practice;
 public interface CRUDOperationsListener {
     void putEntry(Entry entry);
     void deleteEntry(int entryPosition);
+    void editEntry(int entryPosition);
+    void updateEntry(Entry entry, int entryPosition);
 }
