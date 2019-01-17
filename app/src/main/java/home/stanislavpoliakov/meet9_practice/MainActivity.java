@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,7 +88,14 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.preferences) {
+
+            //PreferencesFragment fragment = new PreferencesFragment();
+
+            PreferencesFragment fragment = new PreferencesFragment();
+
+            fragmentManager.beginTransaction()
+                    .add(fragment, "").commitNow();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
     public void deleteEntry(int entryPosition) {
         dbManager.deleteEntry(entryPosition);
         fillRecycler();
-        if (dbManager.getEntries().size() == 0) {
+        if (dbManager.getEntries().isEmpty()) {
             isEmptyState = true;
             initFragments();
         }

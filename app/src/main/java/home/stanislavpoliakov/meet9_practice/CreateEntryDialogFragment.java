@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,6 +71,27 @@ public class CreateEntryDialogFragment extends DialogFragment {
         initItems(view);
     }
 
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (editTitle.getText().toString().equals(defaultTitle)
+            || editTitle.getText().toString().isEmpty()
+            || editText.getText().toString().equals(defaultText)
+            || editText.getText().toString().isEmpty()) createButton.setEnabled(false);
+            else createButton.setEnabled(true);
+        }
+    };
+
     private void initItems(View view) {
 
         // Инициализируем default-значения полей ввода через R.string
@@ -83,8 +106,8 @@ public class CreateEntryDialogFragment extends DialogFragment {
         editText.setOnFocusChangeListener(mFocusChangeListener);
 
         //TODO Реализовать отключение кнопки, если ничего не введено в поля
-        //editTitle.addTextChangedListener(textWatcher);
-        //editText.addTextChangedListener(textWatcher);
+        editTitle.addTextChangedListener(textWatcher);
+        editText.addTextChangedListener(textWatcher);
 
         createButton = view.findViewById(R.id.createButton);
 

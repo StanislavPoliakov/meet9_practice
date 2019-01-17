@@ -14,6 +14,35 @@
     <string name="entry_text">Текст записи</string>
     <string name="timestamp">Дата публикации</string>
     <string name="create_entry_label">Создание новой записи</string>
+    <string name="edit_entry_label">Редактирование записи</string>
     <string name="def_title">Введите наименование новой записи</string>
     <string name="def_text">Содержимое записи</string>
+    <string name="button_create_label">Создать</string>
+    <string name="button_update_label">Обновить</string>
+    <string name="save_prefs">Сохранить настройки</string>
+    <string name="prefs_ce_label">Create / Edit preview:</string>
+    <string name="prefs_rv_label">RecyclerView item preview:</string>
+
+    <string-array name="font_size">
+        <item>10</item>
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+    </string-array>
+
+    <string-array name="font_style">
+        <item>normal</item>
+        <item>bold</item>
+        <item>italic</item>
+        <item>bold italic</item>
+    </string-array>
+
+    <string-array name="font_color">
+        <item>red</item>
+        <item>blue</item>
+        <item>green</item>
+        <item>yellow</item>
+        <item>black</item>
+    </string-array>
 </resources>

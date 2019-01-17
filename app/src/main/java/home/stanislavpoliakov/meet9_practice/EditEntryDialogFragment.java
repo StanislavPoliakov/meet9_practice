@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * Класс, описывающий создание новой записи. Запускается в dialog-фрагменте
@@ -69,6 +72,36 @@ public class EditEntryDialogFragment extends DialogFragment {
         initItems(view);
     }
 
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            /*if (editTitle.getText().toString().equals(defaultTitle)
+                    || editTitle.getText().toString().isEmpty()
+                    || editText.getText().toString().equals(defaultText)
+                    || editText.getText().toString().isEmpty()) updateButton.setEnabled(false);
+            else updateButton.setEnabled(true);*/
+            checkEditViews();
+        }
+    };
+
+    private void checkEditViews() {
+        if (editTitle.getText().toString().equals(defaultTitle)
+                || editTitle.getText().toString().isEmpty()
+                || editText.getText().toString().equals(defaultText)
+                || editText.getText().toString().isEmpty()) updateButton.setEnabled(false);
+        else updateButton.setEnabled(true);
+    }
+
     private void initItems(View view) {
         final Bundle bundle = getArguments();
 
@@ -103,11 +136,15 @@ public class EditEntryDialogFragment extends DialogFragment {
         editText.setOnFocusChangeListener(mFocusChangeListener);
 
         //TODO Реализовать отключение кнопки, если ничего не введено в поля
-        //editTitle.addTextChangedListener(textWatcher);
-        //editText.addTextChangedListener(textWatcher);
+        editTitle.addTextChangedListener(textWatcher);
+        editText.addTextChangedListener(textWatcher);
+
+        TextView entryLabel = view.findViewById(R.id.entryLabel);
+        entryLabel.setText(getResources().getString(R.string.edit_entry_label));
 
         updateButton = view.findViewById(R.id.createButton);
-        updateButton.setText("Обновить");
+        updateButton.setText(getResources().getString(R.string.button_update_label));
+        checkEditViews();
 
         updateButton.setOnClickListener(new View.OnClickListener() {
 

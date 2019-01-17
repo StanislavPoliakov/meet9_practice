@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="home.stanislavpoliakov.meet9_practice.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/preferences"
         android:icon="@android:drawable/ic_notification_clear_all"
         android:iconTint="@color/colorAccent"
         android:iconTintMode="add"
