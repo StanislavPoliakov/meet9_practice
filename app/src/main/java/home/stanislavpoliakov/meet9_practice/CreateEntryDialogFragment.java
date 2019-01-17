@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * Класс, описывающий создание новой записи. Запускается в dialog-фрагменте
@@ -27,6 +28,39 @@ public class CreateEntryDialogFragment extends DialogFragment {
     String defaultTitle;
     String defaultText;
     private CRUDOperationsListener mActivity;
+    private PrefStorage prefStorage;
+
+    /**
+     * Определяем переменную типа TextWatcher для того, чтобы отлавливать изменения в поле ввода
+     * в процессе ввода значений.
+     */
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        /**
+         * Описываю реализацию только последнего метода, так как нужно уже по факту (а не в процессе)
+         * изменять состояние кнопки. Надо сказать, что получается все равно в процессе. По факту
+         * введенного символа. Учитывая, что кнопка становится активной, если введенные значения
+         * не пустые и не дефолтные - то подойдет любой метод.
+         * @param s
+         */
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (editTitle.getText().toString().equals(defaultTitle)
+                    || editTitle.getText().toString().isEmpty()
+                    || editText.getText().toString().equals(defaultText)
+                    || editText.getText().toString().isEmpty()) createButton.setEnabled(false);
+            else createButton.setEnabled(true);
+        }
+    };
 
     /**
      * В момент присоединения фрагмента (attach) получаем вызывающий контекст для того,
@@ -71,41 +105,24 @@ public class CreateEntryDialogFragment extends DialogFragment {
         initItems(view);
     }
 
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (editTitle.getText().toString().equals(defaultTitle)
-            || editTitle.getText().toString().isEmpty()
-            || editText.getText().toString().equals(defaultText)
-            || editText.getText().toString().isEmpty()) createButton.setEnabled(false);
-            else createButton.setEnabled(true);
-        }
-    };
-
     private void initItems(View view) {
+
+        prefStorage = new PrefStorage(getContext()); // Загружаем настройки
 
         // Инициализируем default-значения полей ввода через R.string
         defaultTitle = getResources().getString(R.string.def_title);
         defaultText = getResources().getString(R.string.def_text);
 
         editTitle = view.findViewById(R.id.editTitle);
+        setLoadedPrefs(editTitle, prefStorage.getCETitlePrefs()); // применяем настройки
         editText = view.findViewById(R.id.editText);
+        setLoadedPrefs(editText, prefStorage.getCETextPrefs()); // применяем настройки
 
         //mFocusChangeListener - для добавления эффекта "значений по умолчанию" для пустого поля
         editTitle.setOnFocusChangeListener(mFocusChangeListener);
         editText.setOnFocusChangeListener(mFocusChangeListener);
 
-        //TODO Реализовать отключение кнопки, если ничего не введено в поля
+        // Добавляем обработчик события ввода текста для активации (или деактивации) кнопки
         editTitle.addTextChangedListener(textWatcher);
         editText.addTextChangedListener(textWatcher);
 
@@ -134,8 +151,25 @@ public class CreateEntryDialogFragment extends DialogFragment {
     }
 
     /**
+     * Метод применения настроек
+     * @param view, к которой мы будем применять изменения
+     * @param preferences - загруженные настройки, которые мы будем применять
+     */
+    private void setLoadedPrefs(TextView view, PrefData preferences) {
+        view.setTextSize(preferences.size);
+        view.setTypeface(view.getTypeface(), preferences.style);
+        view.setTextColor(preferences.color);
+    }
+
+    /**
      * Реализация эффекта "значений полей по умолчанию" при пустых полях ввода. Также меняем цвет
-     * полей и расположение текста
+     * полей и расположение текста.
+     *
+     * ВНИМАНИЕ: цвет будет меняться в зависимости от настроек и в зависимости от значений полей.
+     * Может показаться, что это изменение неподконтрольно, однако, я специально не дорабатывал
+     * до конца реализацию, чтобы продемонстрировать обе фичи. Вообще, нужно определить "светлый" тон
+     * и "темный" тон для текста, и в зависимости от настроек цвета выставлять тон математически.
+     * Ничего сложно - времени просто не осталось :) TODO сделать математический обсчет тонов
      */
     private View.OnFocusChangeListener mFocusChangeListener = new View.OnFocusChangeListener() {
 
@@ -147,6 +181,7 @@ public class CreateEntryDialogFragment extends DialogFragment {
 
             // Черный цвет текста, если значение в поле введено
             final int ON_FOCUS_COLOR = getResources().getColor(R.color.focusedColor, getContext().getTheme());
+            //int ON_FOCUS_COLOR = prefStorage.getCETitlePrefs().color;
 
             if (v != null) {
                 EditText editView = (EditText) v;

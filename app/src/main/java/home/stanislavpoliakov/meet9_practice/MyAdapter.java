@@ -24,10 +24,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private static final String TAG = "meet9_logs";
     private List<Entry> entries;
     private Context context; //Контекст был введен для теста анимации
+    private PrefStorage prefStorage;
 
     public MyAdapter(Context context, List<Entry> entries){
         this.entries = entries;
         this.context = context;
+        this.prefStorage = new PrefStorage(context);
     }
 
     @NonNull
@@ -87,6 +89,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private ConstraintLayout constraintLayout;
         //private boolean isSingleLine = true; // для эффекта разворачивающегося списка
 
+
         public MyViewHolder(View itemView) {
             super(itemView);
 
@@ -103,14 +106,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             });
 
 
-
             constraintLayout = itemView.findViewById(R.id.entryLayout);
             titleView = itemView.findViewById(R.id.titleTextView);
+            setLoadedPrefs(titleView, prefStorage.getRVTitlePrefs()); // устанавливаем pref'-ы
             textView = itemView.findViewById(R.id.entryTextView);
+            setLoadedPrefs(textView, prefStorage.getRVTitlePrefs()); // еще
             timeStampLabel = itemView.findViewById(R.id.timeStampLabel);
+            setLoadedPrefs(timeStampLabel, prefStorage.getRVTimestampPrefs()); // и еще
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
 
+            /**
+             * Запуск операции удаления через каст полученного контекста и интерфейс, по нажатию
+             * кнопки
+             */
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -123,6 +132,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 }
             });
 
+            /**
+             * Запуск операции редактирования, через каст полученного контекста и интерфейс, по
+             * нажатию кнопки
+             */
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -136,6 +149,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 }
             });
 
+            //До анимации руки дошли, но нужно тщательно курить мануал
             //final Animation slideDown = AnimationUtils.loadAnimation(context, R.anim.slidedown);
             //final Animation slideUp = AnimationUtils.loadAnimation(context, R.anim.slideup);
 
@@ -143,7 +157,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 private boolean isSingleLine = true; // для эффекта разворачивающегося списка
 
                 /**
-                 * По нажатию на элемент списка разворачиваем текст записи
+                 * По нажатию на элемент списка разворачиваем текст записи, а предыдущую View (на
+                 * которую мы нажимали) сворачиваем
                  * @param v
                  */
                 @Override
@@ -167,6 +182,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     previousView = v;
                 }
             });
+        }
+
+        private void setLoadedPrefs(TextView view, PrefData preferences) {
+            view.setTextSize(preferences.size);
+            view.setTypeface(view.getTypeface(), preferences.style);
+            view.setTextColor(preferences.color);
         }
     }
 }

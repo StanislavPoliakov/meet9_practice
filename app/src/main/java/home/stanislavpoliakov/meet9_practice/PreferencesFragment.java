@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Фрагмент настроек
  */
 public class PreferencesFragment extends DialogFragment {
     private static final String TAG = "meet9_logs";
@@ -37,7 +37,7 @@ public class PreferencesFragment extends DialogFragment {
     private EditText fontColor;
     private Spinner fontSize, fontStyle;
     private View divider;
-    private ImageView prefTitleStar, prefTextStar, prefRecTitleStar, prefRecTextStar, prefRecTimeStar;
+    private ImageView prefTitleStar, prefTextStar, prefRecTitleStar, prefRecTextStar, prefRecTimeStar; // звездочки
     private ArrayAdapter<CharSequence> styleAdapter, sizeAdapter, colorAdapter;
     private View currentTextView;
     private PrefStorage prefStorage;
@@ -50,6 +50,9 @@ public class PreferencesFragment extends DialogFragment {
         return inflater.inflate(R.layout.preferences_fragment, container, false);
     }
 
+    /**
+     * Заполняем фрагмент по ширине (на экран) и по высоте (на контент)
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -71,6 +74,12 @@ public class PreferencesFragment extends DialogFragment {
 
         Button savePrefsButton = view.findViewById(R.id.savePrefsButton);
         savePrefsButton.setOnClickListener(new View.OnClickListener() {
+
+            /**
+             * По нажатию на кнопку "Сохранить" обходим все TextView из превью, значения которых надо сохранить,
+             * собираем значения и отправляем на сохранение в SharedPreferences
+             * @param v
+             */
             @Override
             public void onClick(View v) {
 
@@ -85,6 +94,12 @@ public class PreferencesFragment extends DialogFragment {
         });
 
         fontColor = view.findViewById(R.id.fontColor);
+
+        /**
+         * Этот Watcher нужен для того, чтобы изменить цвет текста элемента, когда значение в поле
+         * цвета валидно (равняется шести знакам. Ограничения на используемые знаки, а также на
+         * максимальное количество симоволов ввода, установлены в XML-файле
+         */
         fontColor.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -113,6 +128,11 @@ public class PreferencesFragment extends DialogFragment {
         initSpinners(view);
     }
 
+    /**
+     *  Метод "подготовки" превью для элементов RecyclerView. Инициализируем элементы,
+     *  устанавливаем в них значения из настроек (SP)
+     * @param view общая ViewGroup, среди которой будем искать наши элементы
+     */
     private void prepareRecyclerViewExample(View view) {
 
         View recyclerViewExample = view.findViewById(R.id.recyclerViewExample);
@@ -130,28 +150,20 @@ public class PreferencesFragment extends DialogFragment {
         recyclerViewTimeStamp.setOnClickListener(mOnClickListener);
     }
 
-    private void setLoadedPrefs(TextView view, PrefData preferences) {
-        view.setTextSize(preferences.size);
-        view.setTypeface(view.getTypeface(), preferences.style);
-        view.setTextColor(preferences.color);
-    }
-
-    private PrefData getPrefs(TextView view) {
-        PrefData preferences = new PrefData();
-        float pxTextSize = view.getTextSize();
-        float spTextSize = Math.round(pxTextSize / getResources().getDisplayMetrics().scaledDensity);
-        preferences.size = spTextSize;
-        preferences.style = view.getTypeface().getStyle();
-        preferences.color = view.getTextColors().getDefaultColor();
-        return preferences;
-    }
-
+    /**
+     *  Метод для "подготовки" превью для фрагментов Создания и Редактирования элементов
+     * @param view
+     */
     private void prepareCreateEditExample(View view) {
 
         View createExample = view.findViewById(R.id.createExample);
 
         prefTitleStar = createExample.findViewById(R.id.prefTitleStar);
         prefTitleStar.setVisibility(View.VISIBLE);
+
+        // Это звездочка. Добавлена был для идеи того, чтобы наглядно было видно, что изменилось, а
+        // что нет в настройках. То есть для трекинга изменений. На реализацию не осталось времени.
+        // Здесь сделали ее прозрачной на 50% - в глаза слишком бросалась.
         prefTitleStar.setAlpha(0.5f);
 
         prefTextStar = createExample.findViewById(R.id.prefTextStar);
@@ -166,15 +178,42 @@ public class PreferencesFragment extends DialogFragment {
         setLoadedPrefs(editText, prefStorage.getCETextPrefs());
         editText.setOnClickListener(mOnClickListener);
 
+        // Чтобы нельзя было нажать на EditText и менять там значения. setEnabled(false) не подходит,
+        // потому что становится не наглядным из-за своей обработки UI
         editTitle.setFocusable(false);
         editTitle.setClickable(false);
 
         editText.setFocusable(false);
         editTitle.setClickable(false);
 
-        divider = view.findViewById(R.id.divider3);
+        divider = view.findViewById(R.id.divider3); // Инициализирую, потому что буду прятать
     }
 
+    private void setLoadedPrefs(TextView view, PrefData preferences) {
+        view.setTextSize(preferences.size);
+        view.setTypeface(view.getTypeface(), preferences.style);
+        view.setTextColor(preferences.color);
+    }
+
+    /**
+     *  Метод полчения данных от TextView, которые необходимо сохранять
+     * @param view
+     * @return
+     */
+    private PrefData getPrefs(TextView view) {
+        PrefData preferences = new PrefData();
+        float pxTextSize = view.getTextSize();
+        float spTextSize = Math.round(pxTextSize / getResources().getDisplayMetrics().scaledDensity);
+        preferences.size = spTextSize;
+        preferences.style = view.getTypeface().getStyle();
+        preferences.color = view.getTextColors().getDefaultColor();
+        return preferences;
+    }
+
+    /**
+     * Это обработка нажатий на элементы TextView, для того, чтобы в спиннерах отображались текущие
+     * для TextView элементы, а в поле цвета - hex-код цвета
+     */
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -191,18 +230,17 @@ public class PreferencesFragment extends DialogFragment {
             int textStyle = textTypeface.getStyle();
             fontStyle.setSelection(textStyle);
 
-
             ColorStateList stateList = ((TextView) v).getTextColors();
             String hexColor = String.format("%06X", (0xFFFFFF & stateList.getDefaultColor()));
 
             fontColor.setText(hexColor);
-
-            /*Log.d(TAG, "onClick: textSize = " + spTextSize);
-            Log.d(TAG, "onClick: textStyle = " + textTypeface.getStyle());
-            Log.d(TAG, "onClick: textColor = " + hexColor);*/
         }
     };
 
+    /**
+     * Инициализация спиннеров
+     * @param view
+     */
     private void initSpinners(View view) {
         fontSize = view.findViewById(R.id.fontSize);
 
@@ -214,6 +252,15 @@ public class PreferencesFragment extends DialogFragment {
         fontSize.setAdapter(sizeAdapter);
         fontSize.setSelection(1);
         fontSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            /**
+             * Обработка события выбора размера текста в спиннере. Вызывается каждый раз, когда мы кликаем
+             * по TextView, потому что в onClick мы делаем setSelection для спиннеров
+             * @param parent адаптер спиннера
+             * @param view сам спиннер. Интересно, что можно установить адаптивные значения. Приятно.
+             * @param position позиция выбора в списке значений
+             * @param id полагаю, что это id значения
+             */
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = (String) parent.getSelectedItem();
@@ -234,11 +281,18 @@ public class PreferencesFragment extends DialogFragment {
         fontStyle.setAdapter(styleAdapter);
         fontStyle.setSelection(1);
         fontStyle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            /**
+             * То же самое, только для стиля текста
+             * @param parent
+             * @param view
+             * @param position
+             * @param id
+             */
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Typeface typeface = ((TextView) currentTextView).getTypeface();
                 ((TextView) currentTextView).setTypeface(typeface, position);
-                //((TextView) view).setTypeface(null, position);
             }
 
             @Override
@@ -247,29 +301,14 @@ public class PreferencesFragment extends DialogFragment {
             }
         });
 
-        /*fontColor = view.findViewById(R.id.fontColor);
-        colorAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.font_color, android.R.layout.simple_spinner_item);
-        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        fontColor.setAdapter(colorAdapter);
-        fontColor.setSelection(1);*/
-        //fontColor
-
         setOptionsVisibility(false);
     }
 
-    private AdapterView.OnItemSelectedListener mItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            Log.d(TAG, "View = " + view.getId());
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
+    /**
+     * Метод, который прячет (по умолчанию) и показывает (по нажатию) панель инструментов для выбора
+     * настроек текста
+     * @param isVisible - делаем видимым?
+     */
     private void setOptionsVisibility(boolean isVisible) {
         fontSize.setVisibility((isVisible) ? View.VISIBLE : View.GONE);
         fontColor.setVisibility((isVisible) ? View.VISIBLE : View.GONE);

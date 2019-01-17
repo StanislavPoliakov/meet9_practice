@@ -81,15 +81,18 @@ public class DBManager {
         return entryList;
     }
 
+    /**
+     * Метод получения записи из базы данных по номеру позиции. Необходм для операции модификации
+     * @param entryPosition позиция записи, по которой мы ищем
+     * @return запись из базы данных
+     */
     public Entry getEntry(int entryPosition) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        //String title = "";
-       // String text = "";
 
         try {
             Cursor cursor = database.query("entries", null, null, null,
                     null, null, null);
-            cursor.moveToPosition(entryPosition);
+            cursor.moveToPosition(entryPosition); // Двигаем курсор на позицию
 
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String text = cursor.getString(cursor.getColumnIndex("entry_text"));
@@ -101,7 +104,6 @@ public class DBManager {
         } finally {
             database.close();
         }
-        //return new Entry(title, text);
         return null;
     }
 
@@ -148,6 +150,11 @@ public class DBManager {
         return contentValues;
     }
 
+    /**
+     * Метод вставки записи в базу данных на конретную позицию
+     * @param entry запись, которую будем вставлять
+     * @param entryPosition позиция, на которую будем вставлять
+     */
     public void putEntryIntoPosition(Entry entry, int entryPosition) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
@@ -159,6 +166,9 @@ public class DBManager {
             Cursor cursor = database.query("entries", null, null, null,
                     null, null, null);
             cursor.moveToPosition(entryPosition);
+
+            // Находим запись в базе данных, по соответсвующему порядковому номеру позиции,
+            // получаем id этой записи, добавляем к нашим content values и делаем замену
             int entryID = cursor.getInt(cursor.getColumnIndex("entry_id"));
             cursor.close();
             contentValues.put("entry_id", entryID);
@@ -171,19 +181,19 @@ public class DBManager {
         }
     }
 
+    /**
+     * Метод удаления записи из базы данных
+     * @param entryPosition позиция, с которой нужно удалить запись
+     */
     public void deleteEntry(int entryPosition) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         try {
-            //database.beginTransaction();
             Cursor cursor = database.query("entries", null, null, null,
                     null, null, null);
             cursor.moveToPosition(entryPosition);
             int entryID = cursor.getInt(cursor.getColumnIndex("entry_id"));
             cursor.close();
-            //Log.d(TAG, "deleteEntry: " + entryID);
             database.delete("entries", "entry_id = " + entryID, null);
-            //database.setTransactionSuccessful();
-            //database.endTransaction();
 
         } catch (SQLException ex) {
             Log.w(TAG, "deleteEntry: ", ex);

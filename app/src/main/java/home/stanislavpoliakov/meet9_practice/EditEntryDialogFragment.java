@@ -72,6 +72,9 @@ public class EditEntryDialogFragment extends DialogFragment {
         initItems(view);
     }
 
+    /**
+     * Watcher для обработки изменений текстовых полей
+     */
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -85,15 +88,13 @@ public class EditEntryDialogFragment extends DialogFragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            /*if (editTitle.getText().toString().equals(defaultTitle)
-                    || editTitle.getText().toString().isEmpty()
-                    || editText.getText().toString().equals(defaultText)
-                    || editText.getText().toString().isEmpty()) updateButton.setEnabled(false);
-            else updateButton.setEnabled(true);*/
-            checkEditViews();
+            checkEditViews(); // вытащил в отдельный метод
         }
     };
 
+    /**
+     * Метод проверки состояний полей ввода для активации (деактивации) кнопки
+     */
     private void checkEditViews() {
         if (editTitle.getText().toString().equals(defaultTitle)
                 || editTitle.getText().toString().isEmpty()
@@ -104,30 +105,33 @@ public class EditEntryDialogFragment extends DialogFragment {
 
     private void initItems(View view) {
         final Bundle bundle = getArguments();
+        PrefStorage prefStorage = new PrefStorage(getContext());
 
         // Инициализируем default-значения полей ввода через R.string
         defaultTitle = getResources().getString(R.string.def_title);
         defaultText = getResources().getString(R.string.def_text);
 
         editTitle = view.findViewById(R.id.editTitle);
+        setLoadedPrefs(editTitle, prefStorage.getCETitlePrefs());
         editText = view.findViewById(R.id.editText);
+        setLoadedPrefs(editText, prefStorage.getCETextPrefs());
 
         editTitle.setText(bundle.getString("title", defaultTitle));
         editText.setText(bundle.getString("text", defaultText));
 
         if (editText.getText().toString().equals(defaultText)) {
-            editText.setTextColor(getResources().getColor(R.color.unfocusedColor, getContext().getTheme()));
+            //editText.setTextColor(getResources().getColor(R.color.unfocusedColor, getContext().getTheme()));
             editText.setGravity(Gravity.CENTER);
         } else {
-            editText.setTextColor(getResources().getColor(R.color.focusedColor, getContext().getTheme()));
+            //editText.setTextColor(getResources().getColor(R.color.focusedColor, getContext().getTheme()));
             editText.setGravity(Gravity.NO_GRAVITY);
         }
 
         if (editTitle.getText().toString().equals(defaultTitle)) {
-            editTitle.setTextColor(getResources().getColor(R.color.unfocusedColor, getContext().getTheme()));
+            //editTitle.setTextColor(getResources().getColor(R.color.unfocusedColor, getContext().getTheme()));
             editTitle.setGravity(Gravity.CENTER);
         } else {
-            editTitle.setTextColor(getResources().getColor(R.color.focusedColor, getContext().getTheme()));
+            //editTitle.setTextColor(getResources().getColor(R.color.focusedColor, getContext().getTheme()));
             editTitle.setGravity(Gravity.NO_GRAVITY);
         }
 
@@ -135,7 +139,6 @@ public class EditEntryDialogFragment extends DialogFragment {
         editTitle.setOnFocusChangeListener(mFocusChangeListener);
         editText.setOnFocusChangeListener(mFocusChangeListener);
 
-        //TODO Реализовать отключение кнопки, если ничего не введено в поля
         editTitle.addTextChangedListener(textWatcher);
         editText.addTextChangedListener(textWatcher);
 
@@ -166,6 +169,12 @@ public class EditEntryDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
+    }
+
+    private void setLoadedPrefs(TextView view, PrefData preferences) {
+        view.setTextSize(preferences.size);
+        view.setTypeface(view.getTypeface(), preferences.style);
+        view.setTextColor(preferences.color);
     }
 
     /**

@@ -84,13 +84,16 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
         return true;
     }
 
+    /**
+     * Обработка выбора элемента контекстного меню
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.preferences) {
-
-            //PreferencesFragment fragment = new PreferencesFragment();
 
             PreferencesFragment fragment = new PreferencesFragment();
 
@@ -99,11 +102,6 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void updateFragment(List<Entry> data) {
-        /*Fragment fragment = fragmentManager.findFragmentByTag("EntriesFragment");
-        fragment.set*/
     }
 
     /**
@@ -136,20 +134,27 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
         }
     }
 
+    /**
+     * Метод интерфейса для взаимодействия Фрагмента с Активити. Здесь мы запускаем Фрагмент
+     * для редактирования записи, которому в качестве аргументов (setArguments) передаем значения
+     * полей и позицию изменяемого элемента, которую мы просто вернем по dismiss в метод update
+     * @param entryPosition
+     */
     @Override
     public void editEntry(int entryPosition) {
         Bundle bundle = new Bundle();
         Entry entry = dbManager.getEntry(entryPosition);
         bundle.putString("title", entry.getTitle());
-        //Log.d(TAG, "editEntry: title = " + bundle.getString("title"));
         bundle.putString("text", entry.getText());
-        //Log.d(TAG, "editEntry: text = " + bundle.getString("text"));
         bundle.putInt("position", entryPosition);
 
-        //bundle.
         startEditFragment(bundle);
     }
 
+    /**
+     * Метод запуска фрагмента для редактирования записи
+     * @param defaultFields
+     */
     private void startEditFragment(Bundle defaultFields) {
         EditEntryDialogFragment dialogFragment = new EditEntryDialogFragment();
         dialogFragment.setArguments(defaultFields);
@@ -158,6 +163,12 @@ public class MainActivity extends AppCompatActivity implements CRUDOperationsLis
                 .commitNow();
     }
 
+
+    /**
+     * Метод обновления записи в базе по позиции. Строго говоря, не обновления, а замены.
+     * @param entry
+     * @param entryPosition
+     */
     @Override
     public void updateEntry(Entry entry, int entryPosition) {
         dbManager.putEntryIntoPosition(entry, entryPosition);
