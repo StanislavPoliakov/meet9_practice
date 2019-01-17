@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Класс Фрагмента, описвающего поведение при отстутствии записей в базе
  */
 public class NoEntries extends Fragment {
 
